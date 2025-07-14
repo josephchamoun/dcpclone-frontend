@@ -3,7 +3,7 @@
 import api from '@/lib/api';
 
 export async function loginUser(data) {
-  return api.post('/login', data); // no csrf cookie fetch needed
+  return api.post('/login', data); 
 }
 
 

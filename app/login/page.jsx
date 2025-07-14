@@ -19,7 +19,10 @@ export default function LoginPage() {
       const response = await loginUser({ email, password });
       console.log('Login success:', response.data);
       setSuccess('Logged in successfully!');
-      // Optionally: redirect user or store token/cookie
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      window.location.href = '/profile';
+
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed.';
       setError(message);
