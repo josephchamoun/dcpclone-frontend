@@ -12,6 +12,7 @@ export default function Navbar() {
       justifyContent: 'space-between'
     }}>
       <div>
+        <Link href="/home" style={{ marginRight: '1rem', color: '#fff' }}>Home</Link>
         <Link href="/profile" style={{ marginRight: '1rem', color: '#fff' }}>Profile</Link>
         <Link href="/users" style={{ marginRight: '1rem', color: '#fff' }}>Users</Link>
         <Link href="/about" style={{ marginRight: '1rem', color: '#fff' }}>About</Link>
