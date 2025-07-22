@@ -1,6 +1,9 @@
 'use client';
 import React, { useState, useEffect, useCallback } from 'react';
-import { generateWallet, getWalletBalance } from '@/services/walletService';
+import { generateWallet, getWalletBalance, addMoneyToBalance, getAppBalance } from '@/services/walletService';
+import styles from '@/styles/profile.module.css';
+
+
 
 export default function ProfilePage() {
   const [email, setEmail] = useState('');
@@ -8,6 +11,8 @@ export default function ProfilePage() {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState(null);
+  const [appBalance, setAppBalance] = useState(null);
+  const [error, setError] = useState('');
 
   // Fetch balance for given address
   const fetchBalance = useCallback(async (addr) => {
@@ -18,6 +23,15 @@ export default function ProfilePage() {
       console.error('Failed to fetch balance:', error);
     }
   }, []);
+    // Fetch app balance
+    const fetchAppBalance = useCallback(async () => {
+      try {
+        const response = await getAppBalance();
+        setAppBalance(response.data.balance);
+      } catch (error) {
+        console.error('Failed to fetch app balance:', error);
+      }
+    }, []);
 
   // Generate address for user if not present
   const generateAddressForUser = useCallback(async () => {
@@ -54,35 +68,56 @@ export default function ProfilePage() {
       if (user.deposit_address) {
         setAddress(user.deposit_address);
         fetchBalance(user.deposit_address);
+        fetchAppBalance();
       } else {
         generateAddressForUser();
       }
     }
-  }, [fetchBalance, generateAddressForUser]);
+  }, [fetchBalance, fetchAppBalance, generateAddressForUser]);
 
-  return (
-    <div style={{ padding: '1rem' }}>
-      <h2>Profile</h2>
+const handleClaimMoney = async () => {
+  setError('');
+  try {
+    await addMoneyToBalance();
+    await fetchAppBalance(); // Refresh app balance after claiming
+  } catch (err) {
+    setError('Failed to claim money: ' + (err.response?.data?.error || err.message));
+    console.error(err);
+  }
+};
+
+
+return (
+  <div className={styles['profile-container']}>
+
+    <div className={styles['profile-info']}>
       <p><strong>Name:</strong> {name}</p>
       <p><strong>Email:</strong> {email}</p>
-
-      <div style={{ marginTop: '1rem' }}>
-        <h3>Your Deposit Address</h3>
-        {address ? (
-          <code>{address}</code>
-        ) : (
-          <p>Generating address...</p>
-        )}
-      </div>
-
-      <div style={{ marginTop: '1.5rem' }}>
-        <h3>Balance</h3>
-        {balance !== null ? (
-          <p>{balance} ETH</p>
-        ) : (
-          <p>Loading balance...</p>
-        )}
-      </div>
     </div>
-  );
+
+    <div className={styles.section}>
+      <h3>Your Deposit Address</h3>
+      {address ? (
+        <span className={styles.address}>{address}</span>
+      ) : (
+        <p className={styles.loading}>Generating address...</p>
+      )}
+    </div>
+
+
+    <div className={styles.section}>
+      <h3>App Balance</h3>
+      {appBalance !== null ? (
+        <span className={styles['app-balance']}>{appBalance} ETH</span>
+      ) : (
+        <p className={styles.loading}>Loading app balance...</p>
+      )}
+    </div>
+
+    {error && <div className={styles.error}>{error}</div>}
+
+
+  </div>
+);
+
 }

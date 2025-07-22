@@ -1,8 +1,9 @@
-// app/login/page.js
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { loginUser } from '@/services/authService';
+import styles from '@/styles/login.module.css';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,42 +18,50 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser({ email, password });
-      console.log('Login success:', response.data);
       setSuccess('Logged in successfully!');
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       window.location.href = '/profile';
-
     } catch (err) {
       const message = err.response?.data?.message || 'Login failed.';
       setError(message);
-      console.error('Login error:', message);
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        /><br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        /><br />
-        <button type="submit">Login</button>
-      </form>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2>Welcome Back</h2>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            className={styles.input}
+          />
+          <input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            className={styles.input}
+          />
+          <button type="submit" className={styles.button}>Login</button>
+        </form>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+        {error && <p className={`${styles.message} ${styles.error}`}>{error}</p>}
+        {success && <p className={`${styles.message} ${styles.success}`}>{success}</p>}
+
+        <div className={styles.registerLink}>
+          Don’t have an account?{' '}
+          <Link href="/register">
+            Create one
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

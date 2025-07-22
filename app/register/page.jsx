@@ -1,8 +1,9 @@
-// app/login/page.js
 'use client';
 
 import { useState } from 'react';
 import { registerUser } from '@/services/authService';
+import styles from '@/styles/registration.module.css';
+import Link from 'next/link';
 
 export default function RegistrationPage() {
   const [name, setName] = useState('');
@@ -20,7 +21,7 @@ export default function RegistrationPage() {
       const response = await registerUser({ name, email, password });
       console.log('Registration success:', response.data);
       setSuccess('Registered successfully!');
-      
+      window.location.href = '/login';
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed.';
       setError(message);
@@ -29,35 +30,41 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
-        /><br />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          required
-        /><br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          required
-        /><br />
-        <button type="submit">Register</button>
-      </form>
+    <div className={styles.container}>
+      <div className={styles.card}>
+        <h2>Create Account</h2>
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email Address"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Register</button>
+        </form>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+        {error && <p className={`${styles.message} ${styles.error}`}>{error}</p>}
+        {success && <p className={`${styles.message} ${styles.success}`}>{success}</p>}
+
+        <div className={styles.link}>
+          Already have an account? <Link href="/login">Log in here</Link>
+        </div>
+      </div>
     </div>
   );
 }
