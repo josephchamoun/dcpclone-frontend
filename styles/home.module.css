@@ -1,0 +1,327 @@
+.profilePage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem 1rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+  font-size: 1.25rem;
+  color: rgba(255,255,255,0.9);
+  font-weight: 500;
+}
+
+.actionSection {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.actionButton.enabled {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+}
+
+.actionButton.enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.6);
+}
+
+.actionButton.disabled {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: rgba(255,255,255,0.7);
+  cursor: not-allowed;
+  box-shadow: 0 5px 15px rgba(107, 114, 128, 0.3);
+}
+
+.buttonIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.levelsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.levelCard {
+  perspective: 1000px;
+}
+
+.levelContent {
+  position: relative;
+  padding: 2rem;
+  border-radius: 20px;
+  transition: all 0.4s ease;
+  overflow: hidden;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.levelCard.unlocked .levelContent {
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  transform: translateY(0);
+}
+
+.levelCard.unlocked .levelContent:hover {
+  transform: translateY(-8px) rotateX(5deg);
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+}
+
+.levelCard.locked .levelContent {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  opacity: 0.7;
+}
+
+.levelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.levelNumber {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: white;
+  backdrop-filter: blur(10px);
+}
+
+.lockIcon {
+  width: 24px;
+  height: 24px;
+  color: rgba(255,255,255,0.7);
+}
+
+.levelIconContainer {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.levelIcon {
+  width: 48px;
+  height: 48px;
+}
+
+.levelInfo {
+  text-align: center;
+  margin-top: auto;
+}
+
+.levelName {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.levelDescription {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.levelGlow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 20px;
+  padding: 2px;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.levelCard.unlocked:hover .levelGlow {
+  opacity: 1;
+}
+
+.debugSection {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.debugTitle {
+  color: white;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.debugButtons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.debugBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.debugBtn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.debugBtn.active {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.6);
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .levelsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .profilePage {
+    padding: 1rem 0.5rem;
+  }
+}
+/* Unlock button inside locked level cards */
+.unlockButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+}
+
+.unlockButton:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(34, 197, 94, 0.6);
+}
+
+/* Make unlocked cards more visually clear */
+.levelCard.unlocked .levelContent {
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: -2px;
+  position: relative;
+}
+
+.levelCard.unlocked .levelContent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.05) 0%, transparent 70%);
+  z-index: 0;
+}
+
+.levelPrice {
+  position: relative;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 0.4rem 1.2rem;
+  border-radius: 10px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6); /* Violet to Indigo */
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.25);
+  backdrop-filter: blur(8px);
+  max-width: 80%;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* When the level is unlocked — green glow and different gradient */
+.levelCard.unlocked .levelPrice {
+  background: linear-gradient(135deg, #10b981, #22d3ee);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.6);
+}
+
+/* Add hover scale for unlocked ones */
+.levelCard.unlocked:hover .levelPrice {
+  transform: scale(1.05);
+}
+
+/* Locked — keep modern and muted */
+.levelCard.locked .levelPrice {
+  background: linear-gradient(135deg, #6b7280, #374151); /* Cool gray gradient */
+  box-shadow: 0 0 10px rgba(107, 114, 128, 0.3);
+  opacity: 0.95;
+}
+
+
+

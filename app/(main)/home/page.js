@@ -1,132 +1,175 @@
 'use client';
-import React, { useState, useEffect, useCallback } from 'react';
-import { generateWallet, getWalletBalance, addMoneyToBalance, getAppBalance } from '@/services/walletService';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { Lock, Star, Crown, Gem, Zap, Trophy, Unlock } from 'lucide-react';
+import styles from '@/styles/home.module.css';
+
 export default function ProfilePage() {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [balance, setBalance] = useState(null);
-  const [appBalance, setAppBalance] = useState(null);
-  const [error, setError] = useState('');
+  const [userLevel, setUserLevel] = useState(0);
+  const [canClick, setCanClick] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(0);
 
+  const COOLDOWN_TIME = 5;
 
-
-  
-
-  // Fetch balance for given address
-  const fetchBalance = useCallback(async (addr) => {
-    try {
-      const response = await getWalletBalance(addr);
-      setBalance(response.data.balance);
-    } catch (error) {
-      console.error('Failed to fetch balance:', error);
-    }
-  }, []);
-    // Fetch app balance
-    const fetchAppBalance = useCallback(async () => {
-      try {
-        const response = await getAppBalance();
-        setAppBalance(response.data.balance);
-      } catch (error) {
-        console.error('Failed to fetch app balance:', error);
-      }
-    }, []);
-
-  // Generate address for user if not present
-  const generateAddressForUser = useCallback(async () => {
-    setLoading(true);
-    try {
-      const response = await generateWallet();
-      const newAddress = response.data.address;
-      setAddress(newAddress);
-
-      // Update localStorage with new address
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const user = JSON.parse(storedUser);
-        user.deposit_address = newAddress;
-        localStorage.setItem('user', JSON.stringify(user));
-      }
-
-      await fetchBalance(newAddress);
-    } catch (error) {
-      alert('Failed to generate wallet address');
-      console.error(error);
-    }
-    setLoading(false);
-  }, [fetchBalance]);
-
-  // Load user info on first render
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setEmail(user.email || '');
-      setName(user.name || '');
-
-      if (user.deposit_address) {
-        setAddress(user.deposit_address);
-        fetchBalance(user.deposit_address);
-        fetchAppBalance();
-      } else {
-        generateAddressForUser();
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.level !== undefined) {
+          setUserLevel(parsedUser.level);
+        }
+      } catch (err) {
+        console.error('Error parsing user from localStorage:', err);
       }
     }
-  }, [fetchBalance, fetchAppBalance, generateAddressForUser]);
+  }, []);
 
-const handleClaimMoney = async () => {
-  setError('');
-  try {
-    await addMoneyToBalance();
-    await fetchAppBalance(); // Refresh app balance after claiming
-  } catch (err) {
-    setError('Failed to claim money: ' + (err.response?.data?.error || err.message));
-    console.error(err);
-  }
-};
+  const levels = [
+    { id: 1, name: 'Novice', icon: Star, color: 'from-gray-400 to-gray-600', shadowColor: 'shadow-gray-500/50', description: 'Just getting started!', price:2},
+    { id: 2, name: 'Explorer', icon: Zap, color: 'from-blue-400 to-blue-600', shadowColor: 'shadow-blue-500/50', description: 'Finding your way around', price:5 },
+    { id: 3, name: 'Warrior', icon: Trophy, color: 'from-green-400 to-green-600', shadowColor: 'shadow-green-500/50', description: 'Building strength and skill',price:10 },
+    { id: 4, name: 'Champion', icon: Crown, color: 'from-purple-400 to-purple-600', shadowColor: 'shadow-purple-500/50', description: 'A true force to be reckoned with', price:20 },
+    { id: 5, name: 'Legend', icon: Gem, color: 'from-yellow-400 to-yellow-600', shadowColor: 'shadow-yellow-500/50', description: 'The stuff of legends', price:50 }
+  ];
 
+  const handleButtonClick = () => {
+    if (!canClick) return;
 
+    setCanClick(false);
+    setTimeLeft(COOLDOWN_TIME);
+    console.log('Button clicked! Performing action...');
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          setCanClick(true);
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleUnlockLevel = (id) => {
+    if (id === userLevel + 1) {
+      const newLevel = id;
+      setUserLevel(newLevel);
+      localStorage.setItem('user', JSON.stringify({ level: newLevel }));
+    }
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   return (
-    <div style={{ padding: '1rem' }}>
-      <h2>Profile</h2>
-      <p><strong>Name:</strong> {name}</p>
-      <p><strong>Email:</strong> {email}</p>
-
-      <div style={{ marginTop: '1rem' }}>
-        <h3>Your Deposit Address</h3>
-        {address ? (
-          <code>{address}</code>
-        ) : (
-          <p>Generating address...</p>
-        )}
-      </div>
-
-      <div style={{ marginTop: '1.5rem' }}>
-        <h3>Balance</h3>
-        {balance !== null ? (
-          <p>{balance} ETH</p>
-        ) : (
-          <p>Loading balance...</p>
-        )}
-      </div>
-        <div style={{ marginTop: '1.5rem' }}>
-            <h3>App Balance</h3>
-            {appBalance !== null ? (
-            <p>{appBalance} ETH</p>
-            ) : (
-            <p>Loading app balance...</p>
-            )}
+    <div className={styles.profilePage}>
+      <div className={styles.container}>
+        {/* Header */}
+        <div className={styles.header}>
+          <h1 className={styles.title}>Your Progress</h1>
+          <p className={styles.subtitle}>Current Level: {userLevel}</p>
         </div>
-      <button
-        onClick={handleClaimMoney}
-        
-        style={{ marginTop: '1rem' }}
-      >
-        Claim Money
-      </button>
+
+        {/* Action Button */}
+        <div className={styles.actionSection}>
+          <button
+            onClick={handleButtonClick}
+            disabled={!canClick}
+            className={`${styles.actionButton} ${canClick ? styles.enabled : styles.disabled}`}
+          >
+            {canClick ? (
+              <>
+                <Zap className={styles.buttonIcon} />
+                Take Action
+              </>
+            ) : (
+              <>
+                <div className={`${styles.buttonIcon} ${styles.spinner}`}></div>
+                Wait {formatTime(timeLeft)}
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Levels Grid */}
+        <div className={styles.levelsGrid}>
+          {levels.map((level) => {
+            const isUnlocked = userLevel >= level.id;
+            const canUnlock = userLevel + 1 === level.id;
+            const IconComponent = level.icon;
+
+            return (
+              <div key={level.id} className={`${styles.levelCard} ${isUnlocked ? styles.unlocked : styles.locked}`}>
+                <div
+                  className={`${styles.levelContent} bg-gradient-to-br ${
+                    isUnlocked ? level.color : 'from-gray-300 to-gray-500'
+                  } ${isUnlocked ? 'ring-2 ring-white/50' : ''}`}
+                >
+                  <div className={styles.levelHeader}>
+                    <div className={styles.levelNumber}>{level.id}</div>
+                    {!isUnlocked && <Lock className={styles.lockIcon} />}
+                  </div>
+                 <div className={styles.levelPrice}>${level.price}/day</div>
+
+
+                  <div className={styles.levelIconContainer}>
+                    <IconComponent
+                      className={`${styles.levelIcon} ${isUnlocked ? 'text-white' : 'text-gray-400'}`}
+                    />
+                  </div>
+                  
+
+
+                  <div className={styles.levelInfo}>
+                    <h3 className={`${styles.levelName} ${isUnlocked ? 'text-white' : 'text-gray-500'}`}>
+                      {level.name}
+                    </h3>
+                    <p className={`${styles.levelDescription} ${isUnlocked ? 'text-white/80' : 'text-gray-400'}`}>
+                      {isUnlocked ? level.description : 'Locked'}
+                    </p>
+                  </div>
+
+                  {/* Unlock Button for Locked Levels */}
+                  {!isUnlocked && canUnlock && (
+                    <button
+                      onClick={() => handleUnlockLevel(level.id)}
+                      className={styles.unlockButton}
+                    >
+                      <Unlock size={16} />
+                      Unlock Level
+                    </button>
+
+                  )}
+
+                  {isUnlocked && (
+                    <div className={`${styles.levelGlow} ${level.shadowColor}`}></div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Debug Controls (remove in production) */}
+        <div className={styles.debugSection}>
+          <p className={styles.debugTitle}>Debug Controls:</p>
+          <div className={styles.debugButtons}>
+            {[0, 1, 2, 3, 4, 5].map((level) => (
+              <button
+                key={level}
+                onClick={() => setUserLevel(level)}
+                className={`${styles.debugBtn} ${userLevel === level ? styles.active : ''}`}
+              >
+                Level {level}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

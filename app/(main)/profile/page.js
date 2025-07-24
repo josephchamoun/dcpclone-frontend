@@ -8,6 +8,7 @@ import styles from '@/styles/profile.module.css';
 export default function ProfilePage() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [level, setLevel] = useState(0);
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState(null);
@@ -64,6 +65,7 @@ export default function ProfilePage() {
       const user = JSON.parse(storedUser);
       setEmail(user.email || '');
       setName(user.name || '');
+      setLevel(user.level || 0);
 
       if (user.deposit_address) {
         setAddress(user.deposit_address);
@@ -93,6 +95,7 @@ return (
     <div className={styles['profile-info']}>
       <p><strong>Name:</strong> {name}</p>
       <p><strong>Email:</strong> {email}</p>
+      <p><strong>Level:</strong> {level}</p>
     </div>
 
     <div className={styles.section}>

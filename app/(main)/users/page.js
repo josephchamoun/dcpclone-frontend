@@ -59,6 +59,7 @@ export default function UsersPage() {
     { key: 'updated_at', header: 'Updated At' },
     { key: 'deposit_address', header: 'Deposit Address' },
     { key: 'balance', header: 'Balance' },
+    { key: 'level', header: 'Level' },
     { key: 'is_admin', header: 'Is Admin' },
   ];
 
