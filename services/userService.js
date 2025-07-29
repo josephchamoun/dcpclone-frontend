@@ -10,3 +10,15 @@ export async function getallusers(){
     },
   });
 }
+
+
+export async function userinfo() {
+  const token = localStorage.getItem('token');
+  return api.get('/user', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+}

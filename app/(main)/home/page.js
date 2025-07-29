@@ -12,12 +12,14 @@ import {
 } from 'lucide-react';
 import styles from '@/styles/home.module.css';
 import { getlevels } from '@/services/levelService';
+import { userinfo } from '@/services/userService';
 
 export default function ProfilePage() {
   const [userLevel, setUserLevel] = useState(0);
   const [canClick, setCanClick] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
   const [levels, setLevels] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [showAddCard, setShowAddCard] = useState(false);
 
   const COOLDOWN_TIME = 5;
@@ -25,6 +27,21 @@ export default function ProfilePage() {
   const icons = [Star, Zap, Trophy, Crown, Gem]; // repeatable icon set
 
 useEffect(() => {
+  const fetchUser = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    try {
+      const res = await userinfo();
+      // Axios: response data is in res.data
+      setIsAdmin(res.data.isAdmin);
+      setUserLevel(res.data.level?.level_number || 0);
+      console.log('isAdmin:', res.data.isAdmin);
+    } catch (error) {
+      console.error('Failed to fetch user:', error);
+    }
+  };
+
   const fetchLevels = async () => {
     try {
       const levelsData = await getlevels();
@@ -40,6 +57,7 @@ useEffect(() => {
     }
   };
 
+  fetchUser();
   fetchLevels();
 }, []);
 
@@ -108,15 +126,18 @@ useEffect(() => {
         </div>
 
         {/* Add Level Button */}
-        <div className={styles.addLevelWrapper}>
-          <button
-            className={styles.addLevelButton}
-            onClick={() => setShowAddCard((prev) => !prev)}
-          >
-            <PlusCircle size={18} />
-            Add New Level
-          </button>
-        </div>
+          {isAdmin && (
+          <div className={styles.addLevelWrapper}>
+            <button
+              className={styles.addLevelButton}
+              onClick={() => setShowAddCard((prev) => !prev)}
+            >
+              <PlusCircle size={18} />
+              Add New Level
+            </button>
+          </div>
+        )}
+
 
         {/* Add Level Form Card */}
         {showAddCard && (
