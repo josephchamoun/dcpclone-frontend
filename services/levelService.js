@@ -13,3 +13,15 @@ export async function getlevels() {
 
   return response.data; // ✅ return only the actual level array
 }
+
+
+export async function getLevelById(id) {
+  const token = localStorage.getItem('token');
+  return api.get(`/levels/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+}

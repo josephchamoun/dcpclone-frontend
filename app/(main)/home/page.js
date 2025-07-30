@@ -13,6 +13,7 @@ import {
 import styles from '@/styles/home.module.css';
 import { getlevels } from '@/services/levelService';
 import { userinfo } from '@/services/userService';
+import { getLevelById } from '@/services/levelService';
 
 export default function ProfilePage() {
   const [userLevel, setUserLevel] = useState(0);
@@ -31,11 +32,28 @@ useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
+const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+
+
+      // Fetch level info using level_id
+      if (user.level_id) {
+        getLevelById(user.level_id).then(response => {
+          setUserLevel(response.data.level_number);
+        });
+      } else {
+        setLevel(0);
+      }
+
+
+    }
+    
+
     try {
       const res = await userinfo();
       // Axios: response data is in res.data
-      setIsAdmin(res.data.isAdmin);
-      setUserLevel(res.data.level?.level_number || 0);
+      setIsAdmin(res.data.isAdmin); 
       console.log('isAdmin:', res.data.isAdmin);
     } catch (error) {
       console.error('Failed to fetch user:', error);

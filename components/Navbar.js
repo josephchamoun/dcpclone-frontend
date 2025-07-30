@@ -2,9 +2,28 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { userinfo } from '@/services/userService';
+import { useEffect} from 'react';
+import {usePathname} from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      try {
+        const res = await userinfo();
+        setIsAdmin(res.data.isAdmin);
+      } catch (error) {
+        setIsAdmin(false);
+      }
+    };
+    fetchUser();
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -24,19 +43,21 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <div className="nav-links">
-          <Link href="/home" className="nav-link">
+          <Link href="/home" className={`nav-link${pathname === '/home' ? ' active' : ''}`}>
             <span>Home</span>
           </Link>
-          <Link href="/profile" className="nav-link">
+          <Link href="/profile" className={`nav-link${pathname === '/profile' ? ' active' : ''}`}>
             <span>Profile</span>
           </Link>
-          <Link href="/users" className="nav-link">
-            <span>Users</span>
-          </Link>
-          <Link href="/about" className="nav-link">
+          {isAdmin && (
+            <Link href="/users" className={`nav-link${pathname === '/users' ? ' active' : ''}`}>
+              <span>Users</span>
+            </Link>
+          )}
+          <Link href="/about" className={`nav-link${pathname === '/about' ? ' active' : ''}`}>
             <span>About</span>
           </Link>
-          <Link href="/contact" className="nav-link">
+          <Link href="/contact" className={`nav-link${pathname === '/contact' ? ' active' : ''}`}>
             <span>Contact</span>
           </Link>
         </div>
@@ -66,27 +87,58 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-        <Link href="/home" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-          Home
-        </Link>
-        <Link href="/profile" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-          Profile
-        </Link>
-        <Link href="/users" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-          Users
-        </Link>
-        <Link href="/about" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-          About
-        </Link>
-        <Link href="/contact" className="mobile-link" onClick={() => setIsMenuOpen(false)}>
-          Contact
-        </Link>
-        <button onClick={handleLogout} className="mobile-logout">
-          Logout
-        </button>
-      </div>
+  <Link
+    href="/home"
+    className={`mobile-link${pathname === '/home' ? ' active' : ''}`}
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Home
+  </Link>
+  <Link
+    href="/profile"
+    className={`mobile-link${pathname === '/profile' ? ' active' : ''}`}
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Profile
+  </Link>
+  {isAdmin && (
+    <Link
+      href="/users"
+      className={`mobile-link${pathname === '/users' ? ' active' : ''}`}
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Users
+    </Link>
+  )}
+  <Link
+    href="/about"
+    className={`mobile-link${pathname === '/about' ? ' active' : ''}`}
+    onClick={() => setIsMenuOpen(false)}
+  >
+    About
+  </Link>
+  <Link
+    href="/contact"
+    className={`mobile-link${pathname === '/contact' ? ' active' : ''}`}
+    onClick={() => setIsMenuOpen(false)}
+  >
+    Contact
+  </Link>
+  <button onClick={handleLogout} className="mobile-logout">
+    Logout
+  </button>
+</div>
 
       <style>{`
+
+      .mobile-link.active {
+  color: #fff;
+  background: rgba(102, 126, 234, 0.25);
+}
+      .nav-link.active {
+          color: #fff;
+          background: rgba(102, 126, 234, 0.25);
+        }
         .navbar {
           background: rgba(15, 23, 42, 0.95);
           backdrop-filter: blur(20px);
