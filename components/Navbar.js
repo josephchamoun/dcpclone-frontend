@@ -54,6 +54,11 @@ export default function Navbar() {
               <span>Users</span>
             </Link>
           )}
+          {isAdmin && (
+            <Link href="/admin" className={`nav-link${pathname === '/admin' ? ' active' : ''}`}>
+              <span>Admin</span>
+            </Link>
+          )}
           <Link href="/about" className={`nav-link${pathname === '/about' ? ' active' : ''}`}>
             <span>About</span>
           </Link>
@@ -108,6 +113,15 @@ export default function Navbar() {
       onClick={() => setIsMenuOpen(false)}
     >
       Users
+    </Link>
+  )}
+  {isAdmin && (
+    <Link
+      href="/admin"
+      className={`mobile-link${pathname === '/admin' ? ' active' : ''}`}
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Admin
     </Link>
   )}
   <Link

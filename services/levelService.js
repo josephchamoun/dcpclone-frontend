@@ -25,3 +25,28 @@ export async function getLevelById(id) {
     },
   });
 }
+
+
+
+export async function addLevel(levelData) {
+  const token = localStorage.getItem('token');
+  return api.post('/add_level', levelData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+}
+
+
+export async function deleteLevel(levelNumber) {
+  const token = localStorage.getItem('token');
+  return api.delete(`/delete_level/${levelNumber}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+  });
+}

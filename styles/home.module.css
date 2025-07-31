@@ -99,6 +99,7 @@
 
 .levelContent {
   position: relative;
+  z-index: 1; /* 👈 Higher than .levelGlow */
   padding: 2rem;
   border-radius: 20px;
   transition: all 0.4s ease;
@@ -186,6 +187,8 @@
   z-index: -1;
   opacity: 0;
   transition: opacity 0.3s ease;
+    pointer-events: none;
+  z-index: 0; /* Lower than all content */
 }
 
 .levelCard.unlocked:hover .levelGlow {
@@ -414,7 +417,55 @@
   background: linear-gradient(135deg, #0ea5e9, #06b6d4); /* Deeper cyan */
   transform: translateY(-2px);
   box-shadow: 0 15px 25px rgba(6, 182, 212, 0.6);
+
+
 }
 
+
+.adminControls {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+ 
+  z-index: 2; /* Ensure admin buttons are above .levelGlow */
+  position: relative;
+}
+
+
+.editButton,
+.deleteButton {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.editButton {
+  background: linear-gradient(135deg, #3b82f6, #2563eb); /* Blue */
+  color: white;
+}
+
+.deleteButton {
+  background: linear-gradient(135deg, #ef4444, #b91c1c); /* Red */
+  color: white;
+}
+
+.editButton:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+.deleteButton:hover {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+
+.levelGlow {
+  pointer-events: none; /* 👈 prevents it from blocking clicks */
+  z-index: 0; /* Lower than all content */
+}
 
 
