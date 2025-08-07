@@ -11,6 +11,7 @@ export default function RegistrationPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [referral_code, setReferralCode] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,7 +19,7 @@ export default function RegistrationPage() {
     setSuccess('');
 
     try {
-      const response = await registerUser({ name, email, password });
+      const response = await registerUser({ name, email, password, referral_code });
       console.log('Registration success:', response.data);
       setSuccess('Registered successfully!');
       window.location.href = '/login';
@@ -54,6 +55,12 @@ export default function RegistrationPage() {
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
+          />
+          <input
+            type="text"
+            placeholder="Referral Code (optional)"
+            value={referral_code}
+            onChange={e => setReferralCode(e.target.value)}
           />
           <button type="submit">Register</button>
         </form>
