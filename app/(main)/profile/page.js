@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState(null);
   const [appBalance, setAppBalance] = useState(null);
+  const [referral_code, setReferralCode]= useState('');
   const [error, setError] = useState('');
 
   // Fetch balance for given address
@@ -65,6 +66,7 @@ export default function ProfilePage() {
       const user = JSON.parse(storedUser);
       setEmail(user.email || '');
       setName(user.name || '');
+      setReferralCode(user.referral_code || '');
 
       // Fetch level info using level_id
       if (user.level_id) {
@@ -102,6 +104,7 @@ export default function ProfilePage() {
         <p><strong>Name:</strong> {name}</p>
         <p><strong>Email:</strong> {email}</p>
         <p><strong>Level:</strong> {level}</p>
+        <p><strong>Your Referral Code:</strong> {referral_code}</p>
       </div>
 
       <div className={styles.section}>
