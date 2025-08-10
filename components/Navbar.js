@@ -49,6 +49,9 @@ export default function Navbar() {
           <Link href="/profile" className={`nav-link${pathname === '/profile' ? ' active' : ''}`}>
             <span>Profile</span>
           </Link>
+          <Link href="/referrals" className={`nav-link${pathname === '/referrals' ? ' active' : ''}`}>
+            <span>Referrals</span>
+          </Link>
           {isAdmin && (
             <Link href="/users" className={`nav-link${pathname === '/users' ? ' active' : ''}`}>
               <span>Users</span>
@@ -100,12 +103,20 @@ export default function Navbar() {
     Home
   </Link>
   <Link
-    href="/profile"
-    className={`mobile-link${pathname === '/profile' ? ' active' : ''}`}
-    onClick={() => setIsMenuOpen(false)}
-  >
-    Profile
-  </Link>
+      href="/profile"
+      className={`mobile-link${pathname === '/profile' ? ' active' : ''}`}
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Profile
+    </Link>
+     <Link
+      href="/referrals"
+      className={`mobile-link${pathname === '/referrals' ? ' active' : ''}`}
+      onClick={() => setIsMenuOpen(false)}
+    >
+      Referrals
+    </Link>
+
   {isAdmin && (
     <Link
       href="/users"

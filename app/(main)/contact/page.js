@@ -18,24 +18,7 @@ export default function Contact() {
           <span>+1 (555) 123-4567</span>
         </div>
       </div>
-      <form className={styles.form}>
-        <label>
-          Name
-          <input type="text" placeholder="Your name" required />
-        </label>
-        <label>
-          Email
-          <input type="email" placeholder="Your email" required />
-        </label>
-        <label>
-          Message
-          <textarea rows={4} placeholder="Type your message..." required />
-        </label>
-        <button type="submit" className={styles.button}>
-          <Send size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
-          Send Message
-        </button>
-      </form>
+     
       <footer className={styles.footer}>
         &copy; 2025 MoneyGrow. All rights reserved.
       </footer>

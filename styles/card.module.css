@@ -1,0 +1,47 @@
+.card {
+  background: linear-gradient(145deg, #ffffff, #f7f9fc);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  max-width: 300px;
+  width: 100%;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: #222;
+}
+
+.email,
+.level,
+.admin {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.6rem;
+}
+
+.level {
+  font-weight: 500;
+  color: #444;
+}
+
+.adminYes {
+  font-weight: bold;
+  color: #1b5e20; /* Dark green for admin */
+}
+
+.adminNo {
+  font-weight: bold;
+  color: #b71c1c; /* Dark red for user */
+}
