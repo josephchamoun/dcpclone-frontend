@@ -9,6 +9,7 @@ import {
   Trophy,
   Unlock,
   PlusCircle,
+  Flame,
 } from 'lucide-react';
 import styles from '@/styles/home.module.css';
 import { getlevels } from '@/services/levelService';
@@ -16,6 +17,7 @@ import { userinfo } from '@/services/userService';
 import { getLevelById } from '@/services/levelService';
 import { addLevel } from '@/services/levelService';
 import { deleteLevel } from '@/services/levelService';
+import { updateUserLevel } from '@/services/userService';
 
 export default function HomePage() {
   const [userLevel, setUserLevel] = useState(0);
@@ -36,7 +38,7 @@ export default function HomePage() {
 
   const COOLDOWN_TIME = 5;
 
-  const icons = [Star, Zap, Trophy, Crown, Gem]; // repeatable icon set
+  const icons = [Star, Zap,Flame, Trophy, Crown, Gem ]; // repeatable icon set
     const fetchLevels = async () => {
     try {
       const levelsData = await getlevels();
@@ -110,12 +112,14 @@ const storedUser = localStorage.getItem('user');
     }, 1000);
   };
 
-  const handleUnlockLevel = (levelNumber) => {
-    if (levelNumber === userLevel + 1) {
-      setUserLevel(levelNumber);
-      localStorage.setItem('user', JSON.stringify({ level: levelNumber }));
-    }
-  };
+const handleUnlockLevel = (levelNumber) => {
+  updateUserLevel(levelNumber).then(() => {
+    setUserLevel(levelNumber);
+    const user = JSON.parse(localStorage.getItem('user')); 
+    const updatedUser = { ...user, level_id: levelNumber };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+  });
+};
 
 
   const formatTime = (seconds) => {
@@ -316,7 +320,7 @@ const storedUser = localStorage.getItem('user');
                 className={styles.unlockButton}
               >
                 <Unlock size={16} />
-                Unlock Level
+                Unlock Level ({level.unlock_price}$)
               </button>
             )}
 

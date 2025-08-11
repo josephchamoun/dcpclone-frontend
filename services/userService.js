@@ -22,3 +22,21 @@ export async function userinfo() {
     },
   });
 }
+
+
+export async function updateUserLevel(levelNumber) {
+  const token = localStorage.getItem('token');
+  return api.put(
+    `/update/level/${levelNumber}`,
+    {}, // empty body
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    }
+  );
+}
+
+
