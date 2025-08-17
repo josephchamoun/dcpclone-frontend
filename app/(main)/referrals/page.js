@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getUserReferrals } from '@/services/referralsService';
 import styles from '@/styles/referrals.module.css';
 import ReferralCard from '@/components/ReferralCard';
+import { User, Users } from 'lucide-react';
 
 export default function ReferralsPage() {
   const [referrals, setReferrals] = useState([]);
@@ -10,6 +11,7 @@ export default function ReferralsPage() {
   const [error, setError] = useState('');
   const [noReferrals, setNoReferrals] = useState(false);
   const [userId, setUserId] = useState(undefined); // undefined by default
+ 
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -52,22 +54,31 @@ export default function ReferralsPage() {
     return null;
   }
 
-  return (
-    <div className={styles.container}>
-      <h1>Referrals</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p className={styles.error}>{error}</p>}
-      {noReferrals && !loading && !error && (
-        <p className={styles.noReferrals}>No referrals found.</p>
-      )}
+return (
+  <div className={styles.container}>
+    <h1>Referrals</h1>
 
-      {!noReferrals && !loading && !error && (
-        <div className={styles.cardGrid}>
-          {referrals.map(referral => (
-            <ReferralCard key={referral.id} referral={referral} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    {!loading && !error && !noReferrals && (
+      <div className={styles.referralCount}>
+        <Users size={22} />
+        <span>Total: {referrals.length}</span>
+      </div>
+    )}
+
+    {loading && <p>Loading...</p>}
+    {error && <p className={styles.error}>{error}</p>}
+    {noReferrals && !loading && !error && (
+      <p className={styles.noReferrals}>No referrals found.</p>
+    )}
+
+    {!noReferrals && !loading && !error && (
+      <div className={styles.cardGrid}>
+        {referrals.map(referral => (
+          <ReferralCard key={referral.id} referral={referral} />
+        ))}
+      </div>
+    )}
+  </div>
+);
+
 }

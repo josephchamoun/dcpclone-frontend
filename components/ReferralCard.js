@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import styles from '@/styles/card.module.css';
-import { Mail, Star, Shield } from 'lucide-react';
+import { Mail, Star, Shield, Banknote, DollarSign } from 'lucide-react';
 
 export default function ReferralCard({ referral }) {
   const adminClass =
@@ -17,6 +17,11 @@ export default function ReferralCard({ referral }) {
 
       <p className={styles.level}>
         <Star size={16} /> Level: {referral.level_number ?? 'N/A'}
+      </p>
+
+
+       <p className={styles.email}>
+        <DollarSign size={20} /> Money Earned: {referral.referral_amount}
       </p>
 
     </div>
