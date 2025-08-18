@@ -469,3 +469,10 @@
 }
 
 
+/* home.module.css */
+.claimError {
+  display: block;
+  text-align: center;
+  color: red;
+  margin-top: 0.5rem;
+}

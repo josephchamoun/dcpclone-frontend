@@ -18,6 +18,8 @@ import { addMoneyToBalance } from '@/services/balanceService';
 
 export default function HomePage() {
   const [userLevel, setUserLevel] = useState(0);
+  const [claimError, setClaimError] = useState('');
+
   const [dailyReward, setDailyReward] = useState(0);
   const [canClick, setCanClick] = useState(true);
   const [timeLeft, setTimeLeft] = useState(0);
@@ -33,7 +35,8 @@ export default function HomePage() {
     money_per_day: '',
   });
 
-  const COOLDOWN_TIME = 5;
+  const COOLDOWN_HOURS = 24;
+const COOLDOWN_TIME = COOLDOWN_HOURS * 60*60; // Convert hours to seconds
   const icons = [Star, Zap, Flame, Trophy, Crown, Gem];
 
   // Fetch levels from API
@@ -74,23 +77,83 @@ const fetchUserData = async () => {
 };
 
 
-  useEffect(() => {
+useEffect(() => {
+  fetchUserData();
+  fetchLevels();
+
+  // ✅ Fetch last claim info from backend
+  fetch("http://127.0.0.1:8000/api/user/last-claim", {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.last_daily_claim) {
+        const lastClaim = new Date(data.last_daily_claim);
+        const nextClaim = new Date(lastClaim.getTime() + COOLDOWN_TIME * 1000);
+        const now = new Date();
+
+        const diffSeconds = Math.floor((nextClaim - now) / 1000);
+
+        if (diffSeconds > 0) {
+          setTimeLeft(diffSeconds);
+          setCanClick(false);
+        }
+      }
+    });
+
+  // Listen to localStorage changes
+  const handleStorageChange = () => {
     fetchUserData();
-    fetchLevels();
+  };
+  window.addEventListener("storage", handleStorageChange);
+  return () => {
+    window.removeEventListener("storage", handleStorageChange);
+  };
+}, [COOLDOWN_TIME]);
 
-    // Listen to localStorage changes (level updates from other components/tabs)
-    const handleStorageChange = () => {
-      fetchUserData();
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+useEffect(() => {
+  if (!timeLeft) return;
 
-  const handleButtonClick = () => {
-    if (!canClick) return;
-    console.log(`Collected $${dailyReward}`);
+  const timer = setInterval(() => {
+    setTimeLeft((prev) => {
+      if (prev <= 1) {
+        setCanClick(true);
+        clearInterval(timer);
+        return 0;
+      }
+      return prev - 1;
+    });
+  }, 1000);
+
+  return () => clearInterval(timer);
+}, [timeLeft]);
+
+const handleButtonClick = async () => {
+  if (!canClick) return;
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/user/last-claim", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // ❌ Show error from backend in UI
+      setClaimError(data.error || "Something went wrong");
+      return; // 🚫 don't start cooldown
+    }
+
+    // ✅ Success → clear error and add money
+    setClaimError('');
+    await addMoneyToBalance();
+
+    // Start cooldown only if successful
     setCanClick(false);
     setTimeLeft(COOLDOWN_TIME);
 
@@ -104,15 +167,20 @@ const fetchUserData = async () => {
         return prev - 1;
       });
     }, 1000);
+  } catch (error) {
+    console.error("Error:", error);
+    setClaimError("Network error, please try again.");
+  }
+};
 
-    addMoneyToBalance()
-      .then(() => {
-        console.log('Money added to balance');
-      })
-      .catch((error) => {
-        console.error('Failed to add money to balance:', error);
-      });
-  };
+
+
+const formatTime = (seconds) => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  return `${h}h ${m}m ${s}s`;
+};
 
   const handleUnlockLevel = (levelNumber) => {
     setUnlockError((prev) => ({ ...prev, [levelNumber]: '' }));
@@ -150,11 +218,6 @@ const fetchUserData = async () => {
     }
   };
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className={styles.profilePage}>
@@ -165,28 +228,44 @@ const fetchUserData = async () => {
           <p className={styles.subtitle}>Current Level: {userLevel}</p>
         </div>
 
-        {/* Action Button */}
-        <div className={styles.actionSection}>
-          <button
-            onClick={handleButtonClick}
-            disabled={!canClick}
-            className={`${styles.actionButton} ${
-              canClick ? styles.enabled : styles.disabled
-            }`}
-          >
-            {canClick ? (
-              <>
-                <Zap className={styles.buttonIcon} />
-                Collect ${dailyReward}
-              </>
-            ) : (
-              <>
-                <div className={`${styles.buttonIcon} ${styles.spinner}`}></div>
-                Wait {formatTime(timeLeft)}
-              </>
-            )}
-          </button>
-        </div>
+       <div
+  className={styles.actionSection}
+  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+>
+  <button
+    onClick={handleButtonClick}
+    disabled={!canClick}
+    className={`${styles.actionButton} ${canClick ? styles.enabled : styles.disabled}`}
+  >
+    {canClick ? (
+      <>
+        <Zap className={styles.buttonIcon} />
+        Collect ${dailyReward}
+      </>
+    ) : (
+      <>
+        <div className={`${styles.buttonIcon} ${styles.spinner}`}></div>
+        Wait {formatTime(timeLeft)}
+      </>
+    )}
+  </button>
+
+  {claimError && (
+    <div
+      style={{
+        color: 'red',
+        marginTop: '0.5rem',
+        textAlign: 'center',
+        display: 'block',
+      }}
+    >
+      {claimError}
+    </div>
+  )}
+</div>
+
+
+
 
         {/* Add Level Button */}
         {isAdmin && (
