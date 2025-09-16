@@ -1,5 +1,5 @@
 // app/layout.js
-import '@/styles/globals.css';
+import '@/styles/globals.global.css';
 
 export default function RootLayout({ children }) {
   return (
